@@ -164,6 +164,9 @@ module "eks" {
   map_accounts                         = var.map_accounts
 
   workers_additional_policies = [aws_iam_policy.worker_policy.arn]
+
+  oidc_provider_enabled = true
+
 }
 
 resource "aws_iam_policy" "worker_policy" {
@@ -173,4 +176,19 @@ resource "aws_iam_policy" "worker_policy" {
   policy = file("iam-policy.json")
 }
 
+##ALB##
 
+module "alb_ingress" {
+  source = "../../"
+
+  cluster_identity_oidc_issuer     = module.eks.eks_cluster_identity_oidc_issuer
+  cluster_identity_oidc_issuer_arn = module.eks.eks_cluster_identity_oidc_issuer_arn
+  cluster_name                     = module.eks.eks_cluster_id
+
+  enabled = true
+
+  settings = {
+    "awsVpcID" : module.vpc.vpc_id
+    "awsRegion" : data.aws_region.current.name
+  }
+}
