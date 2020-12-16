@@ -20,7 +20,7 @@ provider "null" {
 }
 
 provider "helm" {
-  version = = "~= 1.0"
+  version = "~> 1.0"
 }
 
 provider "template" {
