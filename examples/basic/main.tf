@@ -1,5 +1,5 @@
 terraform {
-  required_version = ">= 0.12.0"
+  required_version = ">= 0.12.26, < 0.14.0"
 }
 
 provider "aws" {
@@ -17,6 +17,10 @@ provider "local" {
 
 provider "null" {
   version = "~> 2.1"
+}
+
+provider "helm" {
+  version = = "~= 1.0"
 }
 
 provider "template" {
@@ -153,8 +157,20 @@ module "eks" {
     },
   ]
 
+
   worker_additional_security_group_ids = [aws_security_group.all_worker_mgmt.id]
   map_roles                            = var.map_roles
   map_users                            = var.map_users
   map_accounts                         = var.map_accounts
+
+  workers_additional_policies = [aws_iam_policy.worker_policy.arn]
 }
+
+resource "aws_iam_policy" "worker_policy" {
+  name        = "worker-policy"
+  description = "Worker policy for the ALB Ingress"
+
+  policy = file("iam-policy.json")
+}
+
+

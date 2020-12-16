@@ -23,3 +23,8 @@ output "region" {
   value       = var.region
 }
 
+output "group_name" {
+  description = "AWS region."
+  value       = module.eks.workers_asg_names[1]
+}
+
